@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inicio</title>
+  <style>
+    /* Reset básico */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      display: flex;
+      min-height: 100vh;
+      background: #f8f9fb;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 250px;
+      background: white;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      padding: 1rem;
+      position: fixed;
+      height: 100%;
+    }
+
+    .sidebar .logo {
+      display: flex;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .sidebar .logo img {
+      width: 40px;
+      margin-right: 10px;
+    }
+
+    .sidebar .menu {
+      list-style: none;
+      flex-grow: 1;
+    }
+
+    .sidebar .menu li {
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+    }
+
+    .sidebar .menu li img {
+      width: 24px;
+      margin-right: 10px;
+    }
+
+    .sidebar .menu li a {
+      text-decoration: none;
+      color: #333;
+      font-size: 1rem;
+    }
+
+    .sidebar .logout {
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+    }
+
+    .sidebar .logout img {
+      width: 24px;
+      margin-right: 10px;
+    }
+
+    /* Main Content */
+    main {
+      flex-grow: 1;
+      margin-left: 250px;
+      padding: 2rem;
+    }
+
+    .task-container {
+      background: white;
+      border-radius: 10px;
+      padding: 1rem;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .task-container header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .task-container header .actions button {
+      margin-right: 10px;
+      padding: 0.5rem 1rem;
+      background: #007aff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .task-container header .actions button:hover {
+      background: #005ecb;
+    }
+
+    .task-container header .search {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .task-container header .search input {
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    /* Task List Header */
+    .task-list-header {
+      display: flex;
+      padding: 1rem;
+      background: #f1f3f7;
+      border-bottom: 2px solid #e0e4eb;
+      font-weight: bold;
+      color: #555;
+    }
+
+    .task-list-header div {
+      flex: 1;
+      text-align: left;
+    }
+
+    .task-list-header div:first-child {
+      flex: 0.5;
+    }
+
+    /* Task Items */
+    .task-list {
+      list-style: none;
+    }
+
+    .task-item {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+      position: relative;
+      transition: background 0.3s;
+    }
+
+    .task-item:hover {
+      background: #f0f4ff;
+    }
+
+    .task-item span {
+      flex: 1;
+      text-align: left;
+    }
+
+    .task-item span:first-child {
+      flex: 0.5;
+    }
+
+    /* Modal */
+    .modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      width: 90%;
+      max-width: 500px;
+      z-index: 1000;
+      display: none;
+      padding: 1.5rem;
+    }
+
+    .modal.open {
+      display: block;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+
+    .modal-header .close {
+      font-size: 1.5rem;
+      color: #333;
+      cursor: pointer;
+    }
+
+    .modal-content table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .modal-content table td {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .modal-content table td:first-child {
+      font-weight: bold;
+      color: #333;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+      display: none;
+    }
+
+    .overlay.open {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="logo">
+      <img src="logo.png" alt="Logo">
+      <span>SSF TICKETS</span>
+    </div>
+    <ul class="menu">
+      <li><img src="account.png" alt="Account"> <a href="#">Administración</a></li>
+      <li><img src="settings.png" alt="Settings"> <a href="#">Ajustes</a></li>
+      <li><img src="help.png" alt="Help"> <a href="#">Ayuda</a></li>
+    </ul>
+    <div class="logout">
+      <img src="logout.png" alt="Logout">
+      <a href="index.html">Cerrar Sesión</a>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main>
+    <div class="task-container">
+      <header>
+        <div class="actions">
+          <button>NUEVO</button>
+        </div>
+        <div class="search">
+          <input type="date">
+          <input type="text" placeholder="Buscar">
+        </div>
+      </header>
+
+      <!-- Task List Header -->
+      <div class="task-list-header">
+        <div>Ticket</div>
+        <div>Fecha</div>
+        <div>Emisor</div>
+        <div>Sistema</div>
+        <div>Estado</div>
+      </div>
+
+      <!-- Task List -->
+      <ul class="task-list">
+        <li class="task-item" data-info='{"Fecha":"12/01/2024","Nombre Emisor":"Juan Pérez","Sistema":"OKPOS","Estado":"Cerrado"}'>
+          <span>Ticket-001</span>
+          <span>12/01/2024</span>
+          <span>Juan Pérez</span>
+          <span>OKPOS</span>
+          <span>Cerrado</span>
+        </li>
+        <li class="task-item" data-info='{"Fecha":"13/01/2024","Nombre Emisor":"Ana Ruiz","Sistema":"OKPOS","Estado":"Cerrado"}'>
+          <span>Ticket-002</span>
+          <span>13/01/2024</span>
+          <span>Ana Ruiz</span>
+          <span>OKPOS</span>
+          <span>Cerrado</span>
+        </li>
+      </ul>
+    </div>
+  </main>
+
+  <!-- Modal -->
+  <div class="overlay"></div>
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Detalles del Ticket</h2>
+      <span class="close">&times;</span>
+    </div>
+    <div class="modal-content">
+      <table></table>
+    </div>
+  </div>
+
+  <script>
+    const modal = document.querySelector('.modal');
+    const overlay = document.querySelector('.overlay');
+    const closeModal = document.querySelector('.close');
+    const table = document.querySelector('.modal-content table');
+
+    document.querySelectorAll('.task-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const info = JSON.parse(item.dataset.info);
+        table.innerHTML = Object.entries(info)
+          .map(([key, value]) => `<tr><td>${key}:</td><td>${value}</td></tr>`)
+          .join('');
+        modal.classList.add('open');
+        overlay.classList.add('open');
+      });
+    });
+
+    closeModal.addEventListener('click', () => {
+      modal.classList.remove('open');
+      overlay.classList.remove('open');
+    });
+
+    overlay.addEventListener('click', () => {
+      modal.classList.remove('open');
+      overlay.classList.remove('open');
+    });
+  </script>
+</body>
+</html>
